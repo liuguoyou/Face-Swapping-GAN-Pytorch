@@ -19,8 +19,10 @@ if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--img_size', type=int, default=128)
-	parser.add_argument('--img_path', type=str, default='/home/yy/FSGAN/ijbc_clean_no_align_v2')
-	parser.add_argument('--seg_path', type=str, default='/home/yy/FSGAN/data_author')
+	parser.add_argument('--img_path', type=str, default='')
+	parser.add_argument('--seg_path', type=str, default='')
+	parser.add_argument('--ckpt_path', type=str, default='')
+	parser.add_argument('--vgg_path', type=str, default='')
 	# parser.add_argument('--pkl_path', type=str, default='/home/yy/FSGAN/data_full/viddata.pkl')
 	# parser.add_argument('--pkl_path', type=str, default='/home/yy/FSGAN/Allen_KangHui/src_aligned/src_landmark.txt')
 
@@ -37,7 +39,7 @@ if __name__ == '__main__':
 
 	gpus = (0, 1, 2, 3)
 	reenactor = model.Reenactment()
-	generator = model.Generator(reenactor, FLoss=False, resume_path='/home/yy/FSGAN/vgg19/best_model_params_lr0.010000000000000002.pth', consistensy_iter=args.con_iter)
+	generator = model.Generator(reenactor, FLoss=False, resume_path=args.vgg_path, consistensy_iter=args.con_iter)
 	generator = nn.DataParallel(generator, device_ids=gpus).cuda()
 
 	multidis = model.MultiscaleDiscriminator(71)
@@ -46,8 +48,8 @@ if __name__ == '__main__':
 	discriminator = nn.DataParallel(discriminator, device_ids=gpus).cuda()
 
 	if args.resume:
-		g_ckpt = torch.load('work/128/generator_final.pth.tar')
-		d_ckpt = torch.load('work/128/discriminator_final.pth.tar')
+		g_ckpt = torch.load(args.ckpt_path + '/generator_final.pth.tar')
+		d_ckpt = torch.load(args.ckpt_path + '/discriminator_final.pth.tar')
 		generator.module.model.load_state_dict(g_ckpt)
 		discriminator.module.load_state_dict(d_ckpt)
 
@@ -57,19 +59,6 @@ if __name__ == '__main__':
 	# 	max_iter=args.max_iter,
 	# 	consistency_iter = args.con_iter,
 	# 	image_size=args.img_size
-	# 	)
-
-	trainset = dataset.Reenactset_author(
-		img_path=args.img_path,
-		seg_path=args.seg_path,
-		max_iter=args.max_iter,
-		consistency_iter = args.con_iter,
-		image_size=args.img_size
-		)
-
-	# trainset = dataset.Allen_KangHui(
-	# 	lm_path=args.pkl_path,
-	# 	max_iter=args.max_iter,
 	# 	)
 
 	trainloader = Data.DataLoader(
@@ -86,12 +75,12 @@ if __name__ == '__main__':
 
 	optimizerG = torch.optim.Adam(
 		generator.module.model.parameters(),
-		lr=1e-4,
+		lr=2e-4,
 		betas=(0.5, 0.999)
 		)
 	optimizerD = torch.optim.Adam(
 		discriminator.module.parameters(),
-		lr=1e-4,
+		lr=2e-4,
 		betas=(0.5, 0.999)
 		)
 
