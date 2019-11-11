@@ -53,13 +53,14 @@ if __name__ == '__main__':
 		generator.module.model.load_state_dict(g_ckpt)
 		discriminator.module.load_state_dict(d_ckpt)
 
-	# trainset = dataset.Reenactset(
-	# 	pkl_path=args.pkl_path,
-	# 	img_path=args.img_path,
-	# 	max_iter=args.max_iter,
-	# 	consistency_iter = args.con_iter,
-	# 	image_size=args.img_size
-	# 	)
+	trainset = dataset.Reenactset(
+		pkl_path=args.pkl_path,
+		img_path=args.img_path,
+		seg_path=args.seg_path,
+		max_iter=args.max_iter,
+		consistency_iter = args.con_iter,
+		image_size=args.img_size
+		)
 
 	trainloader = Data.DataLoader(
 		trainset,
