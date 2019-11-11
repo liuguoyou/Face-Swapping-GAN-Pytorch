@@ -159,10 +159,10 @@ if __name__ == '__main__':
 			writer.add_images('target', target[0:4, :, :, :], 0)
 			writer.add_images('output', output[0:4, :, :, :], 0)
 			writer.add_images('segment', source_seg[0:4, :, :, :], 0)
-		writer.add_scalars('Log', {'Gen': loss_gen, 'Dis': loss_dis}, batch_idx+15000)
-		writer.add_scalar('LR', lr, batch_idx+15000)
+		writer.add_scalars('Log', {'Gen': loss_gen, 'Dis': loss_dis}, batch_idx)
+		writer.add_scalar('LR', lr, batch_idx)
 
-		if (batch_idx % 10000 == 0) and (batch_idx > 0):
+		if (batch_idx % 5000 == 0) and (batch_idx > 0):
 			torch.save(generator.module.model.state_dict(), 'work/generator_%02d.pth.tar'%(batch_idx))
 			torch.save(discriminator.module.state_dict(), 'work/discriminator_%02d.pth.tar'%(batch_idx))
 
